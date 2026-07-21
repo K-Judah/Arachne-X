@@ -1,3 +1,3 @@
-# Firmware
+# Ai
 
-ESP32 and Raspberry Pi code for Arachne-X.
+AI code for Arachne-X.
