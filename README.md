@@ -1,8 +1,4 @@
 # Arachne-X
-A six-legged autonomous spider robot built for robotics, AI, computer vision, and autonomous navigation research.
-
-
-# Arachne-X
 
 Arachne-X is a six-legged autonomous spider robot being developed as a long-term robotics and AI project.
 
