@@ -1,7 +1,10 @@
-# Phase 1 - Single Leg
-# Phase 2 - Full Leg Testing
-# Phase 3 - Body Design
+# Phase 1 - Single Leg Prototype
+# Phase 2 - Full Leg Validation
+# Phase 3 - Chassis Design
 # Phase 4 - Six-Leg Assembly
 # Phase 5 - Camera Integration
-# Phase 6 - AI Vision
-# Phase 7 - Autonomous Navigation
+# Phase 6 - Dashboard Development
+# Phase 7 - AI Vision
+# Phase 8 - Autonomous Navigation
+# Phase 9 - Field Testing
+# Phase 10 - Arachne-X V1
