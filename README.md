@@ -17,7 +17,7 @@ Arachne-X is a six-legged autonomous spider robot being developed as a long-term
 - Raspberry Pi 4B
 - ESP32 DevKit V1
 - PCA9685 Servo Drivers
-- High Torque Servos
+- High-torque servos
 - Camera Module
 - IMU
 - ToF Sensors
@@ -25,3 +25,23 @@ Arachne-X is a six-legged autonomous spider robot being developed as a long-term
 ## Current Status
 
 🚧 Single-leg prototype in development.
+
+## Team
+
+### Judah
+Project Founder & Lead Systems Engineer
+
+Responsible for:
+- System Architecture
+- Mechanical Design
+- Hardware Integration
+- Project Management
+
+### Bilaal
+Co-Developer
+
+Responsible for:
+- Software Development
+- Firmware
+- AI
+- Dashboard Development
