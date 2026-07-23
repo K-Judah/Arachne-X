@@ -1,8 +1,8 @@
 | Component       | Qty | Status    |
 | --------------- | --- | --------- |
-| Raspberry Pi 4B | 1   | Owned     |
-| ESP32           | 1   | Owned     |
-| PCA9685         | 1   | Owned     |
-| DS3218 Servo    | 18  | Need More |
+| Raspberry Pi 4B | 1   | Planned   |
+| ESP32           | 1   | Planned   |
+| PCA9685         | 1   | Planned   |
+| Servo           | 18  | Need More |
 | Camera Module   | 1   | Planned   |
 
