@@ -1,27 +1,88 @@
 import cv2
+import time
 
-# Print OpenCV version
-print(f"OpenCV Version: {cv2.__version__}")
-
-# Open the default webcam
 camera = cv2.VideoCapture(0)
 
 if not camera.isOpened():
-    print("❌ Could not open camera.")
+    print("Camera not found.")
     exit()
 
-print("✅ Camera opened successfully!")
+previous_time = time.time()
 
 while True:
-    ret, frame = camera.read()
 
-    if not ret:
-        print("Failed to grab frame.")
+    success, frame = camera.read()
+
+    if not success:
         break
+
+    height, width = frame.shape[:2]
+
+    # -------------------------
+    # FPS Counter
+    # -------------------------
+
+    current_time = time.time()
+    fps = 1 / (current_time - previous_time)
+    previous_time = current_time
+
+    # -------------------------
+    # Crosshair
+    # -------------------------
+
+    center_x = width // 2
+    center_y = height // 2
+
+    cv2.line(frame, (center_x-20, center_y), (center_x+20, center_y), (0,255,0), 2)
+    cv2.line(frame, (center_x, center_y-20), (center_x, center_y+20), (0,255,0), 2)
+
+    # -------------------------
+    # Text
+    # -------------------------
+
+    cv2.putText(
+        frame,
+        "ARACHNE-X VISION SYSTEM",
+        (20,40),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.8,
+        (0,255,0),
+        2
+    )
+
+    cv2.putText(
+        frame,
+        f"FPS: {int(fps)}",
+        (20,80),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.7,
+        (0,255,0),
+        2
+    )
+
+    cv2.putText(
+        frame,
+        f"Resolution: {width} x {height}",
+        (20,120),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.7,
+        (0,255,0),
+        2
+    )
+
+    cv2.putText(
+        frame,
+        "Status: CAMERA ONLINE",
+        (20,height-20),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.7,
+        (0,255,0),
+        2
+    )
 
     cv2.imshow("Arachne-X Vision System", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 camera.release()
