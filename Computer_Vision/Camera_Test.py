@@ -1,9 +1,9 @@
 import cv2
 import time
 
-Green = (0, 255, 0)
-Red = (0, 0, 255)
-Blue = (255, 0, 0)
+GREEN = (0, 255, 0)
+RED = (0, 0, 255)
+BLUE = (255, 0, 0)
 
 camera = cv2.VideoCapture(0)
 
@@ -37,8 +37,8 @@ while True:
     center_x = width // 2
     center_y = height // 2
 
-    cv2.line(frame, (center_x-15, center_y), (center_x+15, center_y), Red, 2)
-    cv2.line(frame, (center_x, center_y-15), (center_x, center_y+15), Red, 2)
+    cv2.line(frame, (center_x-15, center_y), (center_x+15, center_y), RED, 2)
+    cv2.line(frame, (center_x, center_y-15), (center_x, center_y+15), RED, 2)
 
     # -------------------------
     # Text
@@ -50,7 +50,7 @@ while True:
         (20,40),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.8,
-        Green,
+        GREEN,
         2
     )
 
@@ -60,7 +60,7 @@ while True:
         (width-110,40),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
-        Green,
+        GREEN,
         2
     )
 
@@ -70,7 +70,7 @@ while True:
         (20,80),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
-        Green,
+        GREEN,
         2
     )
 
@@ -80,7 +80,7 @@ while True:
         (390,height-20),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
-        Green,
+        GREEN,
         2
     )
 
@@ -90,7 +90,7 @@ while True:
         (20,height-20),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
-        Green,
+        GREEN,
         2
     )
 
