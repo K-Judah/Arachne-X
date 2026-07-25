@@ -33,8 +33,8 @@ while True:
     center_x = width // 2
     center_y = height // 2
 
-    cv2.line(frame, (center_x-20, center_y), (center_x+20, center_y), (0,255,0), 2)
-    cv2.line(frame, (center_x, center_y-20), (center_x, center_y+20), (0,255,0), 2)
+    cv2.line(frame, (center_x-15, center_y), (center_x+15, center_y), (0,0,255), 2)
+    cv2.line(frame, (center_x, center_y-15), (center_x, center_y+15), (0,0,255), 2)
 
     # -------------------------
     # Text
@@ -42,7 +42,7 @@ while True:
 
     cv2.putText(
         frame,
-        "ARACHNE-X VISION SYSTEM",
+        "ARACHNE-X Mk I Vision",
         (20,40),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.8,
@@ -53,7 +53,7 @@ while True:
     cv2.putText(
         frame,
         f"FPS: {int(fps)}",
-        (20,80),
+        (530,40),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
         (0,255,0),
@@ -63,7 +63,7 @@ while True:
     cv2.putText(
         frame,
         f"Resolution: {width} x {height}",
-        (20,120),
+        (20,80),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
         (0,255,0),
@@ -73,14 +73,14 @@ while True:
     cv2.putText(
         frame,
         "Status: CAMERA ONLINE",
-        (20,height-20),
+        (390,height-20),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
         (0,255,0),
         2
     )
 
-    cv2.imshow("Arachne-X Vision System", frame)
+    cv2.imshow("ARACHNE-X Mk I Vision", frame)
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
