@@ -80,6 +80,16 @@ while True:
         2
     )
 
+    cv2.putText(
+        frame,
+        "Operator: Judah",
+        (20,height-20),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.7,
+        (0,255,0),
+        2
+    )
+
     cv2.imshow("ARACHNE-X Mk I Vision", frame)
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
