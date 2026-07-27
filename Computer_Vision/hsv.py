@@ -6,6 +6,7 @@ RED = (0, 0, 255)
 BLUE = (255, 0, 0)
 GREEN = (0, 255, 0)
 YELLOW = (0, 255, 255)
+KILL = ("Q") or ("q")
 
 while True:
 
@@ -40,7 +41,7 @@ while True:
     cv2.imshow("Original", frame)
     cv2.imshow("HSV", hsv)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord(KILL):
         break
 
 camera.release()
