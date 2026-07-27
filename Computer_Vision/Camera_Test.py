@@ -4,6 +4,7 @@ import time
 GREEN = (0, 255, 0)
 RED = (0, 0, 255)
 BLUE = (255, 0, 0)
+KILL = ("Q") or ("q")
 
 camera = cv2.VideoCapture(0)
 
@@ -77,7 +78,7 @@ while True:
     cv2.putText(
         frame,
         "Status: CAMERA ONLINE",
-        (390,height-20),
+        (width-250,height-20),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
         GREEN,
@@ -96,7 +97,7 @@ while True:
 
     cv2.imshow("ARACHNE-X Mk I Vision", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord("q"):
+    if cv2.waitKey(1) & 0xFF == ord(KILL):
         break
 
 camera.release()
