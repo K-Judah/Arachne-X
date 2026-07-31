@@ -1,5 +1,5 @@
 
-# ARACHNE-X Mk II Vision
+# ARACHNE-X Mk I Vision
 
 > Computer Vision subsystem for the ARACHNE-X Autonomous Hexapod Robot.
 
@@ -25,9 +25,9 @@ Development is currently being carried out in Python using OpenCV before deploym
 
 # Current Features
 
-## Camera Initialization
+## Camera Initialisation
 
-- Webcam initialization
+- Webcam initialisation
 - Camera availability checking
 - Live video streaming
 - Graceful shutdown
@@ -38,7 +38,7 @@ Development is currently being carried out in Python using OpenCV before deploym
 
 A custom Heads-Up Display (HUD) was developed featuring:
 
-- ARACHNE-X Mk II title
+- ARACHNE-X Mk I title
 - FPS counter
 - Camera resolution
 - Camera status
