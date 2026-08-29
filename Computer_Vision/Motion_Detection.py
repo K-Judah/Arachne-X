@@ -34,6 +34,11 @@ while True:
     )
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
+
+        area = cv2.contourArea(contour)
+        if area < 500:
+            continue
+
         cv2.rectangle(
             frame,
             (x, y),
@@ -42,7 +47,7 @@ while True:
             2
         )
 
-        previous_frame = gray
+    previous_frame = gray
 
     cv2.imshow("Motion Detection", frame)
 
