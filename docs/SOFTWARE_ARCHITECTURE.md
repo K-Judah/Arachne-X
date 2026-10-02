@@ -49,7 +49,7 @@ docs/                   software decisions, setup and validation procedures
 Documents/              existing engineering records (preserved)
 ```
 
-The audit created docs/. The firmware foundation added Firmware/esp32/, Firmware/control_core/ and Firmware/test/, with PlatformIO wrapping the specified ESP-IDF framework and CMake/CTest for independent host tests. The generic ESP32 build target is compile-only until the exact board is identified; physical enable is compiled out. Geometry/persistence schemas and the complete safety state machine remain future work. Keep existing Ai/ and Feature/ placeholders until a separate consolidation change. Avoid parallel implementations in Ai/ and Computer_Vision/.
+The audit created docs/. The firmware foundation added Firmware/esp32/, Firmware/control_core/ and Firmware/test/, with PlatformIO wrapping the specified ESP-IDF framework and CMake/CTest for independent host tests. The generic ESP32 build target is compile-only until the exact board is identified; physical enable is compiled out. The [calibration record schema and simulated persistence](CALIBRATION_RECORDS.md) are implemented. Geometry schemas, physical storage adapters and the complete safety state machine remain future work. Keep existing Ai/ and Feature/ placeholders until a separate consolidation change. Avoid parallel implementations in Ai/ and Computer_Vision/.
 
 ## ESP32 firmware and PCA9685 output
 
@@ -75,6 +75,8 @@ Use the robot's forward direction, never the camera image, to name left/right. P
 Use names such as LF.coxa in configuration and logs. Validate exactly 18 unique joints, unique board/channel pairs, valid channel ranges, two distinct configured board identities and complete per-joint calibration. Channels 9-15 on each board are reserved/disabled. Do not assume mirrored legs have identical servo signs.
 
 ## Calibration and geometry
+
+The current portable calibration subset is specified in [CALIBRATION_RECORDS.md](CALIBRATION_RECORDS.md): CRC-checked records, explicit revision/provenance checks, staged atomic publication and immutable snapshots. Existing actuator and protocol guards are unchanged; storage operations disarm and never auto-enable. The wider geometry and physical calibration process below remains future work.
 
 Separate three versioned configuration records:
 

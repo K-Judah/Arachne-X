@@ -16,6 +16,7 @@ Firmware/
     src/                  portable validation and actuator implementation
   esp32/main/             inert app_main; no hardware drivers
   protocol/               bounded wire codec, transport interface and dispatcher
+  calibration/            versioned record codec, persistence contract and host memory storage
   test/
     support/              fake output, fake clock, synthetic calibration, test runner
     test_control.cpp      simulation and validation tests
@@ -37,7 +38,7 @@ ctest --test-dir Firmware/build-host -C Release --output-on-failure
 
 On Windows, use a developer terminal if the tools are not on PATH. CMake can use its default Visual Studio generator; do not reuse a build directory generated for a different compiler. Use `ctest --test-dir Firmware/build-host -C Release -V` to see every named test case. Tests use runtime checks that remain active in Release builds, not C/C++ assertions removed by NDEBUG. Project sources and tests compile with warnings treated as errors.
 
-`control_tests` links the simulation-enabled core; `locked_tests` separately compiles the same core with simulation disabled, exactly as firmware does. The latter proves that even complete synthetic configuration and a fake backend cannot enable the locked build. `protocol_tests` and `protocol_locked_tests` exercise the codec/dispatcher. A fifth CTest entry runs Python unit tests and actual Python-to-C++ endpoint exchanges through two host-only bridge executables. Configuration also verifies that ESP32 flags combined with simulation enablement fail compilation for the expected guard diagnostic. The Python suite verifies the unchanged upload guard. The GitHub Actions workflow runs all host tests on Linux and Windows and separately cross-compiles the ESP32 application; no physical devices are used.
+`control_tests` links the simulation-enabled core; `locked_tests` separately compiles the same core with simulation disabled, exactly as firmware does. The latter proves that even complete synthetic configuration and a fake backend cannot enable the locked build. `protocol_tests` and `protocol_locked_tests` exercise the codec/dispatcher. A Python CTest entry runs unit tests and actual Python-to-C++ endpoint exchanges through two host-only bridge executables. Two additional suites, calibration_tests and calibration_locked_tests, cover persistence and restored-configuration safety, for seven suites total. See [calibration records](../docs/CALIBRATION_RECORDS.md) for the schema, lifecycle and validation results. Configuration also verifies that ESP32 flags combined with simulation enablement fail compilation for the expected guard diagnostic. The Python suite verifies the unchanged upload guard. The GitHub Actions workflow runs all host tests on Linux and Windows and separately cross-compiles the ESP32 application; no physical devices are used.
 
 ## Cross-compile only
 
@@ -62,7 +63,7 @@ Calibration fields use explicit radians and microseconds: minimum angle, neutral
 
 `validate()` returns a bounded `ValidationReport`, with an error code, offending configuration slot where applicable, logical joint, and a human-readable `describe()` message. It reports missing/duplicate/invalid joints, missing/invalid controllers and channels, duplicate controller/channel pairs, missing calibration fields, uncalibrated/invalid state, invalid direction, non-finite values, reversed/equal ranges and neutral values outside the strict interior. The PCA9685's 0-15 channel domain is a device constraint, not a chosen harness assignment. The same channel number on A and B is valid. Any invalid joint blocks enabling the entire system.
 
-Only test code contains a complete configuration. Its deliberately asymmetric numbers are **synthetic arithmetic fixtures, not MG996R pulse ranges or robot joint limits**. Test support is outside the firmware component and compilation rejects inclusion on ESP32. Geometry, I2C addresses, GPIO assignments, PWM frequency, mechanical limits and measured offsets all remain TBD; fields not consumed by this phase are deliberately absent rather than given misleading defaults. Geometry schemas and persistence remain future work before physical motion.
+Only test code contains a complete configuration. Its deliberately asymmetric numbers are **synthetic arithmetic fixtures, not MG996R pulse ranges or robot joint limits**. Test support is outside the firmware component and compilation rejects inclusion on ESP32. Geometry, I2C addresses, GPIO assignments, PWM frequency, mechanical limits and measured offsets all remain TBD; fields not consumed by this phase are deliberately absent rather than given misleading defaults. Geometry schemas and physical storage adapters remain future work before physical motion. The portable calibration record and simulated atomic persistence are implemented; all physical values remain unresolved.
 
 ## Safety boundary and interfaces
 
@@ -78,7 +79,7 @@ Stopping future software writes is **not** a physical emergency stop, power disc
 
 ## Future calibration
 
-After the electrical design, cutoff circuit and actual harness are verified, support the mechanism and calibrate one joint at a time: confirm channel identity, establish neutral before fitting the horn, measure direction and conservative collision-free endpoints, and validate the installed joint. Never blindly sweep assumed MG996R endpoints. Record servo identity, CAD/geometry revision, measurement method and date; persist the approved calibration atomically with integrity/version checks in a later phase. Servo/horn replacement or changed geometry invalidates the affected record. The current `Calibrated` enum is sufficient for synthetic tests, not evidence of physical certification.
+After the electrical design, cutoff circuit and actual harness are verified, support the mechanism and calibrate one joint at a time: confirm channel identity, establish neutral before fitting the horn, measure direction and conservative collision-free endpoints, and validate the installed joint. Never blindly sweep assumed MG996R endpoints. Record servo identity, CAD/geometry revision, measurement method and date; use the versioned calibration record and atomic storage contract to retain approved evidence. A durable physical storage adapter and a verified approval process remain future work. Servo/horn replacement or changed geometry invalidates the affected record. The current `Calibrated` enum is sufficient for synthetic tests, not evidence of physical certification.
 
 ## Foundation verification snapshot (commit 7d2f00e, 2026-10-02)
 

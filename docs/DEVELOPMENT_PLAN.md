@@ -1,5 +1,11 @@
 # Repository audit and development plan
 
+## Calibration persistence follow-up (2026-10-02)
+
+From synchronized main 4d14f5317edad2339ed38934f25a12bffd339b41, the hardware-independent [calibration-record lifecycle](CALIBRATION_RECORDS.md) is implemented: bounded schema v1, CRC-32, complete configuration validation, external revision and approval-claim metadata, staged atomic publication, host memory storage and fault injection. All 97 previous cases remain; 34 calibration cases bring the total to 131 across seven passing Release suites. Physical output and upload guards remain locked. The existing wire protocol, remote prototypes and engineering assets are unchanged.
+
+The simulated persistence recommendation below is now complete. Real calibration, evidence verification, revision assignment and physical storage durability remain unresolved. The next recommended phase is a host-only calibration inspection/review tool that displays record diagnostics and provenance without approving data or enabling motion. No such tool, geometry, IK, gait or hardware driver is implemented in this phase.
+
 ## Remote integration (2026-10-02)
 
 The three local development changes were replayed onto remote main ee7eb541da199c8d636743de5a2dd22bb56c62e3, preserving its 69 commits since a94bafa. Remote changes have no file overlap with the local commits: CAD/Assembly revisions and additions, six OpenCV scripts plus their README, and Dashboard/dashboard.html remain unchanged. Documents/, Electronics/, firmware, root README, AGENTS.md, docs/ and CI had no remote changes in that interval.

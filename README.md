@@ -30,6 +30,7 @@ The July 24 progress log is historical: subsequent remote work added tibia and c
 ## Software Planning
 
 - [Proposed software architecture](docs/SOFTWARE_ARCHITECTURE.md)
+- [Calibration records and simulated persistence](docs/CALIBRATION_RECORDS.md)
 - [Repository audit and development plan](docs/DEVELOPMENT_PLAN.md)
 - [Instructions for coding agents](AGENTS.md)
 
