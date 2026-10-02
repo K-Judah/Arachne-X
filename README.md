@@ -15,16 +15,25 @@ Arachne-X is a six-legged autonomous spider robot being developed as a long-term
 ## Hardware
 
 - Raspberry Pi 4B
-- ESP32 DevKit V1
-- PCA9685 Servo Drivers
-- High-torque servos
-- Camera Module
-- IMU
-- ToF Sensors
+- ESP32-WROOM-32U based development board (exact board variant TBD)
+- 2 PCA9685 servo controllers
+- 18 MG996R servos: 6 legs with 3 DOF per leg
+- Camera-based computer vision (camera model TBD)
+- IMU and ToF sensors are planned options; selection and integration TBD
 
 ## Current Status
 
 🚧 Single-leg prototype in development.
+
+The latest recorded progress (2026-07-24) reports completed coxa/femur models, an incomplete leg assembly, and tibia work in progress. Firmware, computer vision, Pi control services, and the dashboard are not yet implemented in this repository.
+
+## Software Planning
+
+- [Proposed software architecture](docs/SOFTWARE_ARCHITECTURE.md)
+- [Repository audit and development plan](docs/DEVELOPMENT_PLAN.md)
+- [Instructions for coding agents](AGENTS.md)
+
+The hardware list above is the current planning baseline. Existing master specifications and mechanical documents retain historical DS3218/DevKit V1 references, and the old component list specifies one PCA9685. Those references need reconciliation with the current baseline; they do not establish compatibility with the evolving CAD. Mechanical dimensions, wiring, calibration and power-system values remain TBD until documented and validated.
 
 ## Team
 
