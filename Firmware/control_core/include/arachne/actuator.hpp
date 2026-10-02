@@ -6,7 +6,8 @@ namespace arachne {
 enum class ActuatorState { Disabled, SimulationEnabled, Fault };
 enum class CommandResult {
     Accepted, Disabled, FaultLatched, PhysicalOutputLocked, InvalidConfiguration,
-    InvalidJoint, InvalidTarget, OutOfRange, ClockUnavailable, ClockReversed, OutputFailure
+    InvalidJoint, InvalidTarget, OutOfRange, ClockUnavailable, ClockReversed, OutputFailure,
+    Uncalibrated
 };
 
 // Single-owner/single-thread interface. No background task or automatic motion.
@@ -19,9 +20,12 @@ public:
     void start();
     CommandResult enable_simulation();
     void disable();
+    void emergency_stop();
+    CommandResult validate_target(JointId joint, double angle_rad) const;
     CommandResult command(JointId joint, double angle_rad);
     ActuatorState state() const { return state_; }
     const ValidationReport& validation() const { return report_; }
+    const RobotConfiguration& configuration() const { return config_; }
 
 private:
     CommandResult fault(CommandResult reason);

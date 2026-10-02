@@ -36,6 +36,21 @@ CommandResult ActuatorSystem::fault(CommandResult reason) {
     state_ = ActuatorState::Fault;
     return reason;
 }
+void ActuatorSystem::emergency_stop() { state_ = ActuatorState::Fault; }
+
+CommandResult ActuatorSystem::validate_target(JointId joint, double angle_rad) const {
+    if (!valid(joint)) return CommandResult::InvalidJoint;
+    if (!std::isfinite(angle_rad)) return CommandResult::InvalidTarget;
+    for (const auto& slot : config_.joints) {
+        if (!slot || slot->joint != joint) continue;
+        const auto& c = slot->calibration;
+        if (c.state != CalibrationState::Calibrated) return CommandResult::Uncalibrated;
+        if (!report_.ok()) return CommandResult::InvalidConfiguration;
+        if (angle_rad < *c.min_rad || angle_rad > *c.max_rad) return CommandResult::OutOfRange;
+        return CommandResult::Accepted;
+    }
+    return CommandResult::InvalidConfiguration;
+}
 CommandResult ActuatorSystem::command(JointId joint, double angle_rad) {
     if (state_ == ActuatorState::Fault) return CommandResult::FaultLatched;
     if (state_ != ActuatorState::SimulationEnabled) return CommandResult::Disabled;
@@ -46,8 +61,8 @@ CommandResult ActuatorSystem::command(JointId joint, double angle_rad) {
 #else
     if (output_.domain() != OutputDomain::Simulation) return fault(CommandResult::PhysicalOutputLocked);
     if (!report_.ok()) return fault(CommandResult::InvalidConfiguration);
-    if (!valid(joint)) return fault(CommandResult::InvalidJoint);
-    if (!std::isfinite(angle_rad)) return fault(CommandResult::InvalidTarget);
+    const auto checked = validate_target(joint, angle_rad);
+    if (checked != CommandResult::Accepted) return fault(checked);
     const JointConfiguration* entry = nullptr;
     for (const auto& slot : config_.joints) {
         if (slot && slot->joint == joint) { entry = &*slot; break; }

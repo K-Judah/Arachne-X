@@ -17,6 +17,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Configure offline host tests
         run: cmake -S Firmware -B Firmware/build-host -DARACHNE_HOST_TESTS=ON -DCMAKE_BUILD_TYPE=Release
       - name: Compile (project warnings are errors)

@@ -1,6 +1,6 @@
 # Proposed software architecture
 
-Status: architecture proposed 2026-10-02; the [firmware foundation](../Firmware/README.md) now implements portable joint/configuration validation and host-only simulated actuator control. The ESP32 application remains inert and physical output is unavailable. Gait, IK, drivers, protocol and Pi services below remain proposals. See [development plan and repository audit](DEVELOPMENT_PLAN.md) for evidence and sequencing. Existing Documents/ files remain engineering history; this proposal uses the hardware assumptions supplied for the audit.
+Status: architecture proposed 2026-10-02; the [firmware foundation](../Firmware/README.md) implements portable joint/configuration validation and host-only simulated actuator control. [Protocol v1](../protocol/PROTOCOL.md) now implements a bounded command/telemetry codec, dispatcher and Python reference client. The ESP32 application remains inert and physical output is unavailable. Gait, IK, hardware drivers and full Pi services below remain proposals. See [development plan and repository audit](DEVELOPMENT_PLAN.md) for evidence and sequencing. Existing Documents/ files remain engineering history; this proposal uses the hardware assumptions supplied for the audit.
 
 ## Hardware and configuration contract
 
@@ -49,7 +49,7 @@ docs/                   software decisions, setup and validation procedures
 Documents/              existing engineering records (preserved)
 ```
 
-The audit created docs/. The next phase adds Firmware/esp32/, Firmware/control_core/ and Firmware/test/, with PlatformIO wrapping the specified ESP-IDF framework and CMake/CTest for independent host tests. The generic ESP32 build target is compile-only until the exact board is identified; physical enable is compiled out. Geometry/persistence schemas and the complete safety state machine remain future work. Keep existing Ai/ and Feature/ placeholders until a separate consolidation change. Avoid parallel implementations in Ai/ and Computer_Vision/.
+The audit created docs/. The firmware foundation added Firmware/esp32/, Firmware/control_core/ and Firmware/test/, with PlatformIO wrapping the specified ESP-IDF framework and CMake/CTest for independent host tests. The generic ESP32 build target is compile-only until the exact board is identified; physical enable is compiled out. Geometry/persistence schemas and the complete safety state machine remain future work. Keep existing Ai/ and Feature/ placeholders until a separate consolidation change. Avoid parallel implementations in Ai/ and Computer_Vision/.
 
 ## ESP32 firmware and PCA9685 output
 
@@ -104,6 +104,8 @@ Distinguish controlled stop (bounded deceleration into a validated supported pos
 
 ## Pi to ESP32 communication
 
+The implemented joint-command subset is specified in [protocol/PROTOCOL.md](../protocol/PROTOCOL.md), which governs its exact v1 wire format, message names, timeout settings and E-stop behavior. It uses COBS/CRC16, sessions, increasing request IDs, receiver-issued tokens, and an owner-assigned configuration revision. Physical permission is always false. The Python reference client and C++ endpoint communicate only through simulated transports in tests. The broader motion-intent/Pi-service proposal below remains future work; v1 deliberately has no gait/motion-intent messages. Production session uniqueness, revision persistence, physical transport and timeout measurements remain TBD.
+
 Propose wired serial, initially USB serial through the development board if supported; direct UART is an alternative after voltage levels, pinout and grounding are verified. Connector, baud rate and wiring are TBD. Transport adapters must allow offline loopback and replay.
 
 Before implementation, freeze a versioned bounded binary frame: delimiter-safe framing (proposed COBS), protocol version, message type, payload length, boot/session ID, sequence, request ID, payload and CRC. Exact field widths, byte order, CRC parameters, maximum frame size and golden bytes must be specified in protocol/ before parser work. CRC detects corruption; it is not authentication.
@@ -113,6 +115,8 @@ Define HELLO/CAPABILITIES, CONFIG_STATUS, ARM, DISARM, STOP, MOTION_INTENT, HEAR
 ACK identifies acceptance/rejection and reason; acceptance is not physical completion. Retry only operations with defined idempotency, deduplicated by request ID; do not replay queued motion after recovery. Keep only the latest valid motion intent. STOP has priority over queued movement. Report rejected commands and expiries. Bound parser memory, resynchronize after corrupt/truncated data, and rate-limit diagnostics. Authentication of remote operators belongs at the Pi API; serial access remains restricted to the robot service.
 
 ## Pi services, vision and dashboard
+
+The integrated remote work includes OpenCV experiments in Computer_Vision/ and Dashboard/dashboard.html. Preserve these prototypes: vision currently displays steering labels, and the dashboard assumes direct HTTP /cmd requests to an ESP32 host. Neither is connected to protocol v1 or the proposed Pi API below. Existing camera indices, thresholds and draft HTTP settings are prototype choices, not verified robot configuration. The following service design remains a proposal.
 
 Run a supervised robot service with separate command arbiter, serial adapter, telemetry cache and API components. Restart into a non-driving state. Mission logic supplies intent only while its exclusive lease is valid; operator override cancels that lease. Persist structured events with bounded storage, session IDs and timestamps. Keep camera/inference in a separate worker so slow inference cannot stall control or telemetry.
 

@@ -2,7 +2,7 @@
 
 **Physical servo actuation is intentionally unavailable. This is not production-ready robot firmware.** No PCA9685, I2C, GPIO, PWM or transport driver exists. The ESP32 entry point constructs a disabled controller with unresolved configuration and returns. Building does not flash hardware, and PlatformIO upload targets are rejected. No hardware is needed for any test below.
 
-The baseline is six three-joint legs, 18 MG996R servos and two PCA9685 controllers, with a Raspberry Pi 4B eventually supplying intent to an ESP32-WROOM-32U based board. The exact development board remains TBD.
+The baseline is six three-joint legs, 18 MG996R servos and two PCA9685 controllers, with a Raspberry Pi 4B eventually supplying intent to an ESP32-WROOM-32U based board. The exact development board remains TBD. A hardware-independent [protocol v1](../protocol/PROTOCOL.md) now connects a [Python reference client](../Raspberry_Pi/README.md) to the host-tested C++ endpoint. Its component is registered for the ESP32 build but is not attached to a physical transport or boot task.
 
 ## Layout and build decision
 
@@ -15,6 +15,7 @@ Firmware/
     include/arachne/      joint IDs, configuration, output/clock interfaces, actuator API
     src/                  portable validation and actuator implementation
   esp32/main/             inert app_main; no hardware drivers
+  protocol/               bounded wire codec, transport interface and dispatcher
   test/
     support/              fake output, fake clock, synthetic calibration, test runner
     test_control.cpp      simulation and validation tests
@@ -22,11 +23,11 @@ Firmware/
   scripts/deny_upload.py  rejects PlatformIO upload/program targets
 ```
 
-The existing architecture specifies ESP-IDF and separate esp32/control_core directories. We retain both, using PlatformIO as an ESP-IDF dependency/build frontend, not switching to Arduino. Host CMake/CTest compiles the same core without downloading an embedded SDK or a test framework. Raspberry Pi code is outside this firmware project and is not implemented here.
+The existing architecture specifies ESP-IDF and separate esp32/control_core directories. We retain both, using PlatformIO as an ESP-IDF dependency/build frontend, not switching to Arduino. Host CMake/CTest compiles the same core without downloading an embedded SDK or a test framework. The Python reference client lives outside the firmware project in Raspberry_Pi/; a full Pi robot service is not implemented.
 
 ## Run host tests
 
-Prerequisites: CMake 3.20 or newer and a C++17 compiler (GCC/Clang, or Visual Studio C++ Build Tools and a Windows SDK). The host tests have no external library dependencies. From the repository root:
+Prerequisites: CMake 3.20 or newer, Python 3.11+ (standard library only) and a C++17 compiler (GCC/Clang, or Visual Studio C++ Build Tools and a Windows SDK). The host tests have no external library dependencies. From the repository root:
 
 ```sh
 cmake -S Firmware -B Firmware/build-host -DARACHNE_HOST_TESTS=ON -DCMAKE_BUILD_TYPE=Release
@@ -36,7 +37,7 @@ ctest --test-dir Firmware/build-host -C Release --output-on-failure
 
 On Windows, use a developer terminal if the tools are not on PATH. CMake can use its default Visual Studio generator; do not reuse a build directory generated for a different compiler. Use `ctest --test-dir Firmware/build-host -C Release -V` to see every named test case. Tests use runtime checks that remain active in Release builds, not C/C++ assertions removed by NDEBUG. Project sources and tests compile with warnings treated as errors.
 
-Two executables are tested. `control_tests` links the simulation-enabled core; `locked_tests` separately compiles the same core with simulation disabled, exactly as firmware does. The latter proves that even complete synthetic configuration and a fake backend cannot enable the locked build. Configuration also verifies that ESP32 flags combined with simulation enablement fail compilation for the expected guard diagnostic. Both executables run entirely on the host. The GitHub Actions workflow runs host tests on Linux and Windows and separately cross-compiles the ESP32 application; no physical devices are used.
+`control_tests` links the simulation-enabled core; `locked_tests` separately compiles the same core with simulation disabled, exactly as firmware does. The latter proves that even complete synthetic configuration and a fake backend cannot enable the locked build. `protocol_tests` and `protocol_locked_tests` exercise the codec/dispatcher. A fifth CTest entry runs Python unit tests and actual Python-to-C++ endpoint exchanges through two host-only bridge executables. Configuration also verifies that ESP32 flags combined with simulation enablement fail compilation for the expected guard diagnostic. The Python suite verifies the unchanged upload guard. The GitHub Actions workflow runs all host tests on Linux and Windows and separately cross-compiles the ESP32 application; no physical devices are used.
 
 ## Cross-compile only
 
@@ -71,7 +72,7 @@ Only test code contains a complete configuration. Its deliberately asymmetric nu
 
 Firmware builds contain no enabling path. Defining `ARACHNE_HOST_SIMULATION` together with ESP-IDF's `ESP_PLATFORM` produces a compile error. The host simulation target alone defines that macro. There is no runtime switch, calibration flag or configuration value that unlocks the ESP32 build. A backend reporting Physical or Unavailable is rejected even in simulation. Test fakes have no hardware dependencies.
 
-Invalid targets, invalid runtime backend domain, clock loss/rollback and failed writes latch `Fault`; subsequent commands and enable requests fail. Start/disable cannot clear that fault. For a fresh offline test session, construct a new controller; a production recovery protocol is not yet implemented. The actuator API is single-thread-owned and must not be called concurrently. No timing loop, velocity limiter, watchdog, protocol, IK or gait is implemented.
+Invalid direct actuator targets, invalid runtime backend domain, clock loss/rollback and failed writes latch `Fault`; subsequent commands and enable requests fail. Protocol preflight uses the side-effect-free `validate_target()` to reject an entire invalid request before actuator calls; `emergency_stop()` explicitly latches Fault. Start/disable cannot clear that fault. For a fresh offline test session, construct a new controller; a production recovery protocol is not yet implemented. The actuator API is single-thread-owned and must not be called concurrently. No timing loop, velocity limiter, physical watchdog, IK or gait is implemented. The protocol endpoint implements configurable communication/motion deadlines only when its owner polls/ticks it; those are not a physical watchdog.
 
 Stopping future software writes is **not** a physical emergency stop, power disconnect or guarantee that an externally powered PCA9685 has stopped an old waveform. This phase must never be used to control powered actuators. OE/cutoff wiring and a measured stop policy are prerequisites for any future hardware driver.
 
@@ -79,7 +80,7 @@ Stopping future software writes is **not** a physical emergency stop, power disc
 
 After the electrical design, cutoff circuit and actual harness are verified, support the mechanism and calibrate one joint at a time: confirm channel identity, establish neutral before fitting the horn, measure direction and conservative collision-free endpoints, and validate the installed joint. Never blindly sweep assumed MG996R endpoints. Record servo identity, CAD/geometry revision, measurement method and date; persist the approved calibration atomically with integrity/version checks in a later phase. Servo/horn replacement or changed geometry invalidates the affected record. The current `Calibrated` enum is sufficient for synthetic tests, not evidence of physical certification.
 
-## Local verification snapshot (2026-10-02)
+## Foundation verification snapshot (commit 7d2f00e, 2026-10-02)
 
 - Windows x64, CMake 4.3.1-msvc1, MSVC 19.51.36260.0: Release configuration and compilation passed with /W4 /WX; no compiler warnings or errors.
 - CTest: 2/2 executables passed, comprising 33/33 control cases and 4/4 locked-build cases (37 total). The actual ESP32 entry-point source was also compiled and run against the locked host core.

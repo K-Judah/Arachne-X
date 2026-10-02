@@ -2,7 +2,7 @@
 
 ## Scope and baseline
 
-Arachne-X is an early-stage hexapod, not a working autonomous robot. Read README.md, docs/SOFTWARE_ARCHITECTURE.md, docs/DEVELOPMENT_PLAN.md and the relevant Documents/ engineering notes before changes. The 2026-10-02 audit is in the development plan. No executable software or build/test commands existed at that audit.
+Arachne-X is an early-stage hexapod, not a working autonomous robot. Read README.md, docs/SOFTWARE_ARCHITECTURE.md, docs/DEVELOPMENT_PLAN.md and the relevant Documents/ engineering notes before changes. The 2026-10-02 audit is in the development plan. No executable software or build/test commands existed at that audited commit (a94bafa). The integrated tree now includes remote OpenCV prototypes and a dashboard draft alongside the host-tested firmware/protocol; do not treat the historical audit inventory as current. Preserve the remote prototypes and engineering assets. Their HTTP/vision interfaces are not integrated with protocol v1.
 
 The current hardware baseline is six legs, three joints per leg (coxa, femur, tibia), 18 MG996R servos, Raspberry Pi 4B, an ESP32-WROOM-32U based development board, two PCA9685 controllers, and camera-based vision. Exact board variant, camera model, wiring and mechanical geometry are TBD. Old DS3218, ESP32 DevKit V1 and single-PCA9685 references are historical, not implementation inputs.
 

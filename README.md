@@ -25,7 +25,7 @@ Arachne-X is a six-legged autonomous spider robot being developed as a long-term
 
 🚧 Single-leg prototype in development.
 
-The latest recorded mechanical progress (2026-07-24) reports completed coxa/femur models, an incomplete leg assembly, and tibia work in progress. A [host-testable ESP32 firmware foundation](Firmware/README.md) now provides joint configuration, validation and simulated actuator control. **Physical servo output is intentionally unavailable.** Computer vision, Pi control services, gait/IK and the dashboard are not yet implemented.
+The July 24 progress log is historical: subsequent remote work added tibia and chassis models and updated coxa/femur and leg assembly assets. Their physical fit, range of motion and calibration still require verification. A [host-testable ESP32 firmware foundation](Firmware/README.md) provides joint configuration, validation and simulated actuator control. [Command/telemetry protocol v1](protocol/PROTOCOL.md) and a [Python reference client](Raspberry_Pi/README.md) now support simulated Pi/ESP32 exchanges. **Physical servo output is intentionally unavailable.** The repository also contains [OpenCV vision prototypes](Computer_Vision/README.md) and a [dashboard draft](Dashboard/dashboard.html). These are not connected to protocol v1; the dashboard uses a separate HTTP /cmd assumption, and vision steering labels are display output. Full Pi control services and gait/IK remain unimplemented.
 
 ## Software Planning
 

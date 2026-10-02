@@ -1,14 +1,30 @@
 # Repository audit and development plan
 
+## Remote integration (2026-10-02)
+
+The three local development changes were replayed onto remote main ee7eb541da199c8d636743de5a2dd22bb56c62e3, preserving its 69 commits since a94bafa. Remote changes have no file overlap with the local commits: CAD/Assembly revisions and additions, six OpenCV scripts plus their README, and Dashboard/dashboard.html remain unchanged. Documents/, Electronics/, firmware, root README, AGENTS.md, docs/ and CI had no remote changes in that interval.
+
+The remote tree now includes tibia/chassis models and updated leg assemblies; file presence does not establish mechanical validation. OpenCV prototypes provide camera/HUD, HSV/colour, contour/motion and displayed steering experiments. The dashboard draft sends HTTP /cmd requests directly to an assumed ESP32 host; it has no implemented backend here and is not compatible with protocol v1. Both prototypes are preserved, not wired into control or exercised against hardware. Future integration must follow the safety boundaries without assuming those draft endpoints or camera settings are production choices.
+
+The inventory, CAD counts and findings below describe a94bafa only, not the integrated tree. The original local development chain remains on backup/codex-protocol-f7af828. No new development phase is part of this integration.
+
+Integration validation: a fresh MSVC Release build passed with /W4 /WX and all 97 cases across five CTest suites passed (33 control, 4 locked, 29 protocol, 2 protocol-locked, 29 Python/integration). Compile-conflict and upload guards passed. All 29 protected remote files matched Git blob hashes; remote vision/dashboard and engineering documents were unchanged. All 21 local links in the integration/development documentation passed. ESP32 cross-compilation remains unverified because the toolchain is absent. The initial Windows build environment required duplicate PATH normalization and sandbox access for MSBuild FileTracker; no project build changes were needed. CMake reported only the expected unused CMAKE_BUILD_TYPE option for the multi-configuration Visual Studio generator; Release was selected explicitly at build/test time.
+
+## Protocol follow-up
+
+The phase after 7d2f00e implements [protocol v1](../protocol/PROTOCOL.md): bounded COBS/CRC framing, a portable ESP32 parser/dispatcher, simulated transport, configuration-aware target preflight, atomic multi-target validation, explicit simulation enable, E-stop latch, configurable liveness/freshness deadlines, status telemetry and a stdlib-only Python reference client. Tests exchange bytes with the actual C++ endpoint in both simulation and locked builds. Physical-output and upload guards remain unchanged. No physical link, gait, IK or Pi robot service is added.
+
+Phase 2's host protocol subset is implemented; real service deployment, authentication, session-seed/revision persistence and measured timings remain future work. The prior cross-build gate remains outstanding because the SDK/toolchain is absent; per this phase's instructions, the slow download is not repeated. Before any hardware phase, close that build gate and verify board identity, power/cutoff and mapping/calibration. The next implementation phase is a simulated calibration-record lifecycle: versioned serialization, integrity checks and atomic persistence tests, retaining the physical-output lock until electrical/mechanical prerequisites are resolved.
+
 ## Firmware foundation follow-up
 
 The implementation following commit 6c87383 adds an ESP-IDF application packaged by PlatformIO, a portable C++17 joint/configuration/actuator core, host fakes/tests and CI. See [Firmware/README.md](../Firmware/README.md) for build commands and restrictions. Explicit simulation enablement exists only in host tests; firmware cannot enable output. The exact board remains unverified, so its generic ESP32 target is compile-only and uploads are blocked.
 
-Phase 1's software configuration and disabled-startup foundation is implemented and all 37 host cases pass. ESP32 cross-compilation remains unverified because its toolchain download was interrupted after impractically slow transfer; this build gate remains outstanding (see the firmware verification snapshot). Physical geometry, board settings, calibration persistence/versioning and electrical validation are still unresolved; no hardware-ready claim is made. Geometry schemas are deferred until their mechanical inputs are established. The historical audit below remains a record of the pre-implementation tree, not a description of today's firmware files. After closing the cross-build verification gate, the next single software phase is phase 2: freeze and test the Pi/ESP32 protocol with simulated endpoints while preserving the physical-output lock.
+Phase 1's software configuration and disabled-startup foundation is implemented; its original 37 host cases remain regression tests. ESP32 cross-compilation remains unverified because its toolchain download was interrupted after impractically slow transfer; this build gate remains outstanding (see the firmware verification snapshot). Physical geometry, board settings, calibration persistence/versioning and electrical validation are still unresolved; no hardware-ready claim is made. Geometry schemas are deferred until their mechanical inputs are established. The historical audit below remains a record of the pre-implementation tree, not a description of today's firmware files. The protocol subset is now implemented as described above; the cross-build gate still blocks hardware validation.
 
 Audit date: 2026-10-02. Audited baseline: a94bafa (Update Progress Log for July 24, 2026). The working tree was clean before this documentation work. The audit covered all 42 tracked files: all text files were read; CAD and media were inventoried and hashed without modification. CAD binary internals, assembly constraints and image content were not engineering-validated.
 
-## Current architecture and development status
+## Historical architecture and development status (a94bafa)
 
 The repository is a mechanical prototype and project-planning collection. The documented intended chain is dashboard -> Raspberry Pi -> ESP32 -> PCA9685 -> servos. There is no executable firmware, Pi service, computer-vision implementation or dashboard source. Firmware/README.md describes an intended home for ESP32 and Pi code, not code currently present.
 
@@ -16,7 +32,7 @@ README.md describes a single-leg prototype in development. Documents/Progress_Lo
 
 The current user-supplied baseline is 6 legs, 3 DOF each, 18 MG996R servos, Raspberry Pi 4B, ESP32-WROOM-32U based development board, two PCA9685 controllers and camera-based vision. Procurement/installation status remains unverified. See [software architecture](SOFTWARE_ARCHITECTURE.md) for the proposed boundaries and configuration policy.
 
-## Inventory and findings
+## Historical inventory and findings (a94bafa)
 
 | Area inspected | Evidence and finding | Disposition |
 | --- | --- | --- |
@@ -41,7 +57,7 @@ The current user-supplied baseline is 6 legs, 3 DOF each, 18 MG996R servos, Rasp
 
 The eight master files share SHA-256 C8B2FEEB40C73100A46F31CE24B15AB33E9BA7BF1C8B68C4344309E9C8809726 at the audited baseline. There are 13 whitespace-only text placeholders: Ai/Ai, Assembly/README.md, four CAD subdirectory READMEs, Dashboard/Dashboard, Documents/HARDWARE_ARCHITECTURE.md, Electronics/Electronics, and the four Feature/*/1 files. Firmware/README.md and POWER_SYSTEM.md are minimal descriptions/outlines, not empty files.
 
-## CAD structure and preservation
+## Historical CAD structure and preservation (a94bafa)
 
 ```text
 CAD/
@@ -90,7 +106,7 @@ Create only the ESP32 application skeleton and portable control/configuration te
 
 Exit: documented clean-checkout host test command and firmware build command pass; tests reject missing geometry/calibration, duplicate channels and invalid values; fake output proves boot and invalid configuration cannot energize joints. CI runs the same commands. No walking, vision or full dashboard is part of this task.
 
-### 2. Protocol and Pi control skeleton
+### 2. Protocol and Pi control skeleton (host protocol subset implemented)
 
 Freeze exact framing/CRC/field definitions and golden vectors. Implement bounded parsers on both sides, session handshake, freshness, idempotent stop/disarm, command arbitration and telemetry using simulated devices. Add Pi package metadata, pinned dependencies and service setup instructions.
 
