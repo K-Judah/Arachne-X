@@ -1,5 +1,11 @@
 # Repository audit and development plan
 
+## Firmware foundation follow-up
+
+The implementation following commit 6c87383 adds an ESP-IDF application packaged by PlatformIO, a portable C++17 joint/configuration/actuator core, host fakes/tests and CI. See [Firmware/README.md](../Firmware/README.md) for build commands and restrictions. Explicit simulation enablement exists only in host tests; firmware cannot enable output. The exact board remains unverified, so its generic ESP32 target is compile-only and uploads are blocked.
+
+Phase 1's software configuration and disabled-startup foundation is implemented and all 37 host cases pass. ESP32 cross-compilation remains unverified because its toolchain download was interrupted after impractically slow transfer; this build gate remains outstanding (see the firmware verification snapshot). Physical geometry, board settings, calibration persistence/versioning and electrical validation are still unresolved; no hardware-ready claim is made. Geometry schemas are deferred until their mechanical inputs are established. The historical audit below remains a record of the pre-implementation tree, not a description of today's firmware files. After closing the cross-build verification gate, the next single software phase is phase 2: freeze and test the Pi/ESP32 protocol with simulated endpoints while preserving the physical-output lock.
+
 Audit date: 2026-10-02. Audited baseline: a94bafa (Update Progress Log for July 24, 2026). The working tree was clean before this documentation work. The audit covered all 42 tracked files: all text files were read; CAD and media were inventoried and hashed without modification. CAD binary internals, assembly constraints and image content were not engineering-validated.
 
 ## Current architecture and development status
@@ -78,7 +84,7 @@ Record exact board/camera identities, wiring proposal, two-controller address pl
 
 Exit: reviewed interface checklist; every unresolved field is explicitly TBD with the measurement needed to resolve it. Historical documentation conflicts are visible, not silently copied into code.
 
-### 1. Buildable software foundation (next implementation task)
+### 1. Buildable software foundation (implemented subset; see follow-up above)
 
 Create only the ESP32 application skeleton and portable control/configuration test harness from the proposed layout. Select and pin the ESP-IDF/toolchain version and exact board settings after board identification. Introduce geometry/wiring/calibration schemas, the 18 named joint IDs, fake servo/clock interfaces, a disarmed startup state, dependency/build metadata, .gitignore and CI. Real PWM output remains disabled.
 

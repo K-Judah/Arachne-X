@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.16)
+
+option(ARACHNE_HOST_TESTS "Build offline tests instead of ESP-IDF firmware" OFF)
+if(ARACHNE_HOST_TESTS)
+    cmake_minimum_required(VERSION 3.20)
+    project(arachne_host_tests LANGUAGES CXX)
+    enable_testing()
+    add_subdirectory(control_core)
+    add_subdirectory(test)
+else()
+    list(APPEND EXTRA_COMPONENT_DIRS "${CMAKE_CURRENT_LIST_DIR}/control_core")
+    # PlatformIO supplies its src_dir; this also permits an ESP-IDF build.
+    list(APPEND EXTRA_COMPONENT_DIRS "${CMAKE_CURRENT_LIST_DIR}/esp32/main")
+    include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+    project(arachne_foundation)
+endif()

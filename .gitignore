@@ -1,0 +1,7 @@
+# Generated software artifacts; never ignore CAD or media by extension.
+Firmware/.pio/
+Firmware/build*/
+Firmware/sdkconfig*
+!Firmware/sdkconfig.defaults
+__pycache__/
+*.pyc

@@ -1,6 +1,6 @@
 # Proposed software architecture
 
-Status: design only, 2026-10-02. No modules below are implemented. See [development plan and repository audit](DEVELOPMENT_PLAN.md) for evidence and sequencing. Existing Documents/ files remain engineering history; this proposal uses the hardware assumptions supplied for this audit.
+Status: architecture proposed 2026-10-02; the [firmware foundation](../Firmware/README.md) now implements portable joint/configuration validation and host-only simulated actuator control. The ESP32 application remains inert and physical output is unavailable. Gait, IK, drivers, protocol and Pi services below remain proposals. See [development plan and repository audit](DEVELOPMENT_PLAN.md) for evidence and sequencing. Existing Documents/ files remain engineering history; this proposal uses the hardware assumptions supplied for the audit.
 
 ## Hardware and configuration contract
 
@@ -49,7 +49,7 @@ docs/                   software decisions, setup and validation procedures
 Documents/              existing engineering records (preserved)
 ```
 
-Only docs/ is created by this audit. Keep existing Ai/ and Feature/ placeholders until a separate consolidation change. Avoid parallel implementations in Ai/ and Computer_Vision/.
+The audit created docs/. The next phase adds Firmware/esp32/, Firmware/control_core/ and Firmware/test/, with PlatformIO wrapping the specified ESP-IDF framework and CMake/CTest for independent host tests. The generic ESP32 build target is compile-only until the exact board is identified; physical enable is compiled out. Geometry/persistence schemas and the complete safety state machine remain future work. Keep existing Ai/ and Feature/ placeholders until a separate consolidation change. Avoid parallel implementations in Ai/ and Computer_Vision/.
 
 ## ESP32 firmware and PCA9685 output
 
