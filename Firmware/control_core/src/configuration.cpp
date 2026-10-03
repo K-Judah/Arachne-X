@@ -19,10 +19,11 @@ bool ValidationReport::contains(ConfigError code) const {
 }
 void ValidationReport::add(ConfigError code, std::optional<std::size_t> slot,
                            std::optional<JointId> joint) {
-    const auto compact_slot = slot ? std::optional<std::uint8_t>{static_cast<std::uint8_t>(*slot)}
-                                   : std::nullopt;
-    if (count < diagnostics.size()) diagnostics[count++] = {code, compact_slot, joint};
-    else diagnostics.back() = {ConfigError::DiagnosticOverflow, std::nullopt, std::nullopt};
+    if (count < diagnostics.size()) {
+        auto& diagnostic = diagnostics[count++];
+        diagnostic = {code, std::nullopt, joint};
+        if (slot) diagnostic.slot = static_cast<std::uint8_t>(*slot);
+    } else diagnostics.back() = {ConfigError::DiagnosticOverflow, std::nullopt, std::nullopt};
 }
 
 ValidationReport validate(const RobotConfiguration& config) {

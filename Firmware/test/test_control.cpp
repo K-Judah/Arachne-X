@@ -345,6 +345,19 @@ TEST(changing_output_domain_after_enable_is_rejected) {
     CHECK(controller.command(JointId::LF_Coxa, 0.2) == CommandResult::PhysicalOutputLocked);
     CHECK(output.attempts == 0);
 }
+TEST(diagnostics_preserve_present_zero_and_absent_slots) {
+    ValidationReport report;
+    report.add(ConfigError::InvalidChannel, 0, JointId::LF_Coxa);
+    report.add(ConfigError::InvalidChannel, 17, JointId::RR_Tibia);
+    report.add(ConfigError::MissingJoint, std::nullopt, JointId::LM_Tibia);
+    CHECK(report.count == 3);
+    CHECK(report.diagnostics[0].slot && *report.diagnostics[0].slot == 0);
+    CHECK(report.diagnostics[1].slot && *report.diagnostics[1].slot == 17);
+    CHECK(!report.diagnostics[2].slot);
+    CHECK(report.diagnostics[2].joint == JointId::LM_Tibia);
+    CHECK(report.diagnostics[2].code == ConfigError::MissingJoint);
+}
+
 TEST(diagnostics_are_bounded_and_overflow_remains_an_error) {
     ValidationReport report;
     for (std::size_t i = 0; i < 300; ++i)
